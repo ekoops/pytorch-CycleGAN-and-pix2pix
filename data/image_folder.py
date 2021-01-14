@@ -32,18 +32,19 @@ def make_dataset(dir, max_dataset_size=float("inf")):
     images = []
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
 
-    has_filter_file = 'IMAGE_FILTER_FILE' in os.environ
-
-    image_list = []
-    if has_filter_file:
-        image_filter_file = os.environ['IMAGE_FILTER_FILE']
-        image_list = read_filter_file(image_filter_file)
+    path = os.path.normpath(dir)
+    dirname = path.split(os.sep)[-1]
+    filter_file_name = f"{dirname}_FILTER_FILE"
+    filter_file = os.environ[filter_file_name] if filter_file_name in os.environ else False
+    filter_file_list = []
+    if filter_file:
+        filter_file_list = read_filter_file(filter_file)
 
     for root, _, fnames in sorted(os.walk(dir)):
         for fname in fnames:
             if is_image_file(fname) and\
-                    (not has_filter_file or
-                     (root.find("JPEGImages") != -1 and fname.rsplit(".", 1)[0] in image_list)):
+                    (not filter_file or
+                     (root.find("JPEGImages") != -1 and fname.rsplit(".", 1)[0] in filter_file_list)):
                 path = os.path.join(root, fname)
                 images.append(path)
     return images[:min(max_dataset_size, len(images))]
