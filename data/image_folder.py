@@ -20,13 +20,30 @@ def is_image_file(filename):
     return any(filename.endswith(extension) for extension in IMG_EXTENSIONS)
 
 
+def read_filter_file(image_filter_file):
+    image_list = []
+    with open(image_filter_file) as f:
+        for image_name in f:
+            image_list.append(image_name.rstrip())
+    return image_list
+
+
 def make_dataset(dir, max_dataset_size=float("inf")):
     images = []
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
 
+    has_filter_file = 'IMAGE_FILTER_FILE' in os.environ
+
+    image_list = []
+    if has_filter_file:
+        image_filter_file = os.environ['IMAGE_FILTER_FILE']
+        image_list = read_filter_file(image_filter_file)
+
     for root, _, fnames in sorted(os.walk(dir)):
         for fname in fnames:
-            if is_image_file(fname):
+            if is_image_file(fname) and\
+                    (not has_filter_file or
+                     (root.find("JPEGImages") != -1 and fname.rsplit(".", 1)[0] in image_list)):
                 path = os.path.join(root, fname)
                 images.append(path)
     return images[:min(max_dataset_size, len(images))]
