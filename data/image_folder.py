@@ -33,8 +33,8 @@ def make_dataset(dir, max_dataset_size=float("inf")):
     assert os.path.isdir(dir), '%s is not a valid directory' % dir
 
     path = os.path.normpath(dir)
-    dirname = path.split(os.sep)[-1]
-    filter_file_name = f"{dirname}_FILTER_FILE"
+    phase = path.split(os.sep)[-1]
+    filter_file_name = f"{phase}_FILTER_FILE"
     filter_file = os.environ[filter_file_name] if filter_file_name in os.environ else False
     filter_file_list = []
     if filter_file:
