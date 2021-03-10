@@ -37,7 +37,7 @@ def save_images(webpage, visuals, image_path, aspect_ratio=1.0, width=256, no_re
         if not no_real or (no_real and label == 'fake'):
             im = util.tensor2im(im_data)
             postfix = '' if no_real else f'_${label}'
-            image_name = f'${name}${postfix}.png'
+            image_name = f'{name}{postfix}.png'
             save_path = os.path.join(image_dir, image_name)
             util.save_image(im, save_path, aspect_ratio=aspect_ratio)
             ims.append(image_name)
